@@ -27,7 +27,12 @@
                 <ul>
                     <li v-for="val in details"> {{val}} </li>
                 </ul>
-                <div v-for="val in variants">
+
+                <ul>
+                    <li v-for="size in sizes" v-bind:key="size"> {{size}} </li>
+                </ul>
+
+                <div v-for="val in variants" v-bind:key="val.variantId">
                     <p>{{val.variantColor}}</p>
                 </div>
             </div>
