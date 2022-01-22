@@ -31,10 +31,12 @@ Vue.component('product', {
         <div v-for="(val, index) in variants" v-bind:key="val.variantId" class="color-box"
             :style="{backgroundColor:val.variantColor}" @mouseover="updateProduct(index)">
         </div>
-
+        
         <button v-on:click="addToCart" :disabled="!inStock" :class="{disabledButton: !inStock}"> Add to Cart
         </button>
         <button @click="removeFromCart"> Remove from Cart</button>
+        
+       <info-tabs :shipping="shipping" :details="details" ></info-tabs>
 
      
 
@@ -226,6 +228,49 @@ Vue.component('product-review', {
 
     }
 })
+
+Vue.component('info-tabs', {
+    props: {
+        shipping: {
+            required: true
+        },
+        details: {
+            type: Array,
+            required: true
+        }
+    },
+    template: `
+      <div>
+      
+        <ul>
+          <span class="tabs" 
+                :class="{ activeTab: selectedTab === tab }"
+                v-for="(tab, index) in tabs"
+                @click="selectedTab = tab"
+                :key="tab"
+          >{{ tab }}</span>
+        </ul>
+
+        <div v-show="selectedTab === 'Shipping'">
+          <p>{{ shipping }}</p>
+        </div>
+
+        <div v-show="selectedTab === 'Details'">
+          <ul>
+            <li v-for="detail in details">{{ detail }}</li>
+          </ul>
+        </div>
+    
+      </div>
+    `,
+    data() {
+        return {
+            tabs: ['Shipping', 'Details'],
+            selectedTab: 'Shipping'
+        }
+    }
+})
+
 
 Vue.component('product-tabs', {
     props: {
