@@ -1,4 +1,10 @@
 Vue.component('product', {
+    props: {
+        premium: {
+            type: Boolean,
+            required: true
+        }
+    },
     template: `
     <div class="product">
     <div class="product-image">
@@ -10,6 +16,7 @@ Vue.component('product', {
         <p v-else :class="{outOfStock: !inStock}"> Out Of Stock</p>
         <p v-show="inStock"> Show elements ( more efficient than v-if which removes the element from DOM)</p>
         <p> {{sale}} </p>
+        <p> Shipping: {{shipping}} </p>
 
         <ul>
             <li v-for="val in details"> {{val}} </li>
@@ -27,9 +34,7 @@ Vue.component('product', {
         </button>
         <button @click="removeFromCart"> Remove from Cart</button>
 
-        <div class="cart">
-            <p>Cart {{cart}}</p>
-        </div>
+     
 
     </div>
 
@@ -58,25 +63,24 @@ Vue.component('product', {
                     variantId: 2235,
                     variantColor: "blue",
                     image: './assets/vmSocks-blue-onWhite.jpg',
-                    variantQuantity: 0
+                    variantQuantity: 10
                 },
             ],
             sizes: ["XS", "Small", "Medium", "Lg", "Xl"],
-            cart: 0,
+
         }
     },
     methods: {
         addToCart() {
-            this.cart += 1
+            this.$emit("add-to-cart", this.variants[this.selectedVariant].variantId)
         },
         updateProduct(index) {
             this.selectedVariant = index
             console.log(index)
         },
         removeFromCart() {
-            if (this.cart > 0) {
-                this.cart -= 1
-            }
+            this.$emit("remove-from-cart", this.variants[this.selectedVariant].variantId)
+
         }
     },
     computed: {
@@ -94,6 +98,12 @@ Vue.component('product', {
                 return this.brand + ' ' + this.product + ' are on sale!'
             }
             return this.brand + ' ' + this.product + ' are not on sale!'
+        },
+        shipping() {
+            if (this.premium) {
+                return "Free"
+            }
+            return 2.99
         }
     }
 })
@@ -117,9 +127,40 @@ Vue.component('test-product', {
     }
 })
 
+Vue.component(("product-details"), {
+    props: {
+        details: {
+            type: Array,
+            required: true,
+
+        }
+    },
+    template: `
+    <ul>
+    <li v-for="detail in details">{{ detail }}</li>
+  </ul>
+    `
+})
+
 
 var app = new Vue({
-    el: '#app'
+    el: '#app',
+    data: {
+        premium: true,
+        cart: [],
+    },
+    methods: {
+        updateCart(id) {
+            this.cart.push(id)
+        },
+        removeFromCart(id) {
+            for (var i = this.cart.length - 1; i >= 0; i--) {
+                if (this.cart[i] === id) {
+                    this.cart.splice(i, 1);
+                }
+            }
+        }
+    }
 
 })
 
